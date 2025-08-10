@@ -87,6 +87,7 @@ csvToArray csv =
     csv
         |> String.split "\n"
         |> List.map splitStringToTuple
+        |> List.filter (\( f, _ ) -> not (String.isEmpty f))
         |> Array.fromList
 
 
