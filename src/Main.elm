@@ -9,6 +9,7 @@ module Main exposing (..)
 import Array
 import Browser
 import Html exposing (Html, br, button, div, text)
+import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import Http
 import Random
@@ -147,7 +148,7 @@ view model =
                 Nothing ->
                     ( "No question at index " ++ String.fromInt model.questionNumber, "" )
     in
-    div []
+    div [ style "padding" "1rem" ]
         [ button [ onClick PickRandom ] [ text "ランダムに選べ" ]
         , button [ onClick ShowAnswer ] [ text "答えを表示" ]
         , br [] []
