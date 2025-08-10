@@ -151,7 +151,7 @@ view model =
     in
     div [ style "padding" "1rem" ]
         [ button [ onClick PickRandom ] [ text "ランダムに選べ" ]
-        , button [ onClick ShowAnswer ] [ text "答えを表示" ]
+        , button [ onClick ShowAnswer ] [ text "回答を表示" ]
         , br [] []
         , div [] [ text (String.fromInt model.questionNumber) ]
         , br [] []
