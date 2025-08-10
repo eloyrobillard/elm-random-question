@@ -63,7 +63,7 @@ update msg model =
 
         PickRandom ->
             ( model
-            , Random.generate ShowQuestion (Random.int 0 (Array.length data - 1))
+            , Random.generate ShowQuestion (Random.int 0 (Array.length model.deck - 1))
             )
 
         ShowQuestion qn ->
