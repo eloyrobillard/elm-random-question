@@ -10,6 +10,7 @@ import Array
 import Browser
 import Html exposing (Html, br, button, div, text)
 import Html.Events exposing (onClick)
+import Http
 import Random
 
 
@@ -17,6 +18,7 @@ import Random
 -- MAIN
 
 
+main : Program () Model Msg
 main =
     Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
 
@@ -26,13 +28,13 @@ main =
 
 
 type alias Model =
-    { showQuestion : Bool, showAnswer : Bool, questionNumber : Int }
+    { showQuestion : Bool, showAnswer : Bool, questionNumber : Int, deck : Array.Array ( String, String ) }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { showQuestion = False, showAnswer = False, questionNumber = 0 }
-    , Cmd.none
+    ( { showQuestion = False, showAnswer = False, questionNumber = 0, deck = Array.empty }
+    , getDeckHttp
     )
 
 
@@ -41,7 +43,8 @@ init _ =
 
 
 type Msg
-    = PickRandom
+    = GetDeckResponse (Result Http.Error String)
+    | PickRandom
     | ShowQuestion Int
     | ShowAnswer
 
@@ -49,6 +52,14 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        GetDeckResponse res ->
+            case res of
+                Ok deck_csv ->
+                    ( { model | deck = csvToArray deck_csv }, Cmd.none )
+
+                Err err ->
+                    ( { model | deck = Array.fromList [ ( httpErrorToText err, "" ) ] }, Cmd.none )
+
         PickRandom ->
             ( model
             , Random.generate ShowQuestion (Random.int 0 (Array.length data - 1))
@@ -63,6 +74,53 @@ update msg model =
             ( { model | showAnswer = True }
             , Cmd.none
             )
+
+
+getDeckHttp : Cmd Msg
+getDeckHttp =
+    Http.get { url = "http://127.0.0.1:8001", expect = Http.expectString GetDeckResponse }
+
+
+csvToArray : String -> Array.Array ( String, String )
+csvToArray csv =
+    csv
+        |> String.split "\n"
+        |> List.map splitStringToTuple
+        |> Array.fromList
+
+
+splitStringToTuple : String -> ( String, String )
+splitStringToTuple s =
+    let
+        split =
+            String.split "," s
+
+        first =
+            Maybe.withDefault "" (List.head split)
+
+        second =
+            Maybe.withDefault "" (List.head (Maybe.withDefault [] (List.tail split)))
+    in
+    ( first, second )
+
+
+httpErrorToText : Http.Error -> String
+httpErrorToText err =
+    case err of
+        Http.BadUrl _ ->
+            "BadUrl"
+
+        Http.BadStatus _ ->
+            "BadStatus"
+
+        Http.BadBody _ ->
+            "BadBody"
+
+        Http.NetworkError ->
+            "NetworkError"
+
+        Http.Timeout ->
+            "Timeout"
 
 
 
@@ -82,7 +140,7 @@ view : Model -> Html Msg
 view model =
     let
         ( question, answer ) =
-            case Array.get model.questionNumber data of
+            case Array.get model.questionNumber model.deck of
                 Just r ->
                     r
 
