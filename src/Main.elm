@@ -106,6 +106,23 @@ csvToArray csv =
         |> Array.fromList
 
 
+deckToString : Array.Array ( String, String ) -> String
+deckToString deck =
+    Array.foldr
+        (\( f, s ) acc ->
+            String.concat
+                [ String.concat
+                    [ f
+                    , ","
+                    , s
+                    ]
+                , acc
+                ]
+        )
+        ""
+        deck
+
+
 splitStringToTuple : String -> ( String, String )
 splitStringToTuple s =
     let
