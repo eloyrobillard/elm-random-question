@@ -45,6 +45,7 @@ init _ =
 
 type Msg
     = GetDeckResponse (Result Http.Error String)
+    | PutDeckResponse (Result Http.Error String)
     | PickRandom
     | ShowQuestion Int
     | ShowAnswer
@@ -56,10 +57,13 @@ update msg model =
         GetDeckResponse res ->
             case res of
                 Ok deck_csv ->
-                    ( { model | deck = csvToArray deck_csv }, Cmd.none )
+                    ( { model | deck = csvToArray deck_csv }, putDeckHttp deck_csv )
 
                 Err err ->
                     ( { model | deck = Array.fromList [ ( httpErrorToText err, "" ) ] }, Cmd.none )
+
+        PutDeckResponse _ ->
+            ( model, Cmd.none )
 
         PickRandom ->
             ( model
@@ -75,6 +79,17 @@ update msg model =
             ( { model | showAnswer = True }
             , Cmd.none
             )
+
+
+putDeckHttp : String -> Cmd Msg
+putDeckHttp deck =
+    let
+        body =
+            deck
+                |> Http.stringBody "text/plain"
+    in
+    Http.request
+        { method = "PUT", url = "http://127.0.0.1:8001", body = body, expect = Http.expectString PutDeckResponse, timeout = Nothing, tracker = Nothing, headers = [] }
 
 
 getDeckHttp : Cmd Msg
