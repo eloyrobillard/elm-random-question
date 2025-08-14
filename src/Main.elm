@@ -45,6 +45,7 @@ init _ =
 
 type Msg
     = GetDeckResponse (Result Http.Error String)
+    | PutDeck
     | PutDeckResponse (Result Http.Error String)
     | PickRandom
     | ShowQuestion Int
@@ -57,10 +58,17 @@ update msg model =
         GetDeckResponse res ->
             case res of
                 Ok deck_csv ->
-                    ( { model | deck = csvToArray deck_csv }, putDeckHttp deck_csv )
+                    ( { model | deck = csvToArray deck_csv }, Cmd.none )
 
                 Err err ->
                     ( { model | deck = Array.fromList [ ( httpErrorToText err, "" ) ] }, Cmd.none )
+
+        PutDeck ->
+            let
+                deck_csv =
+                    model.deck |> deckToString
+            in
+            ( model, putDeckHttp deck_csv )
 
         PutDeckResponse _ ->
             ( model, Cmd.none )
@@ -184,6 +192,7 @@ view model =
     div [ style "padding" "1rem" ]
         [ button [ onClick PickRandom ] [ text "ランダムに選べ" ]
         , button [ onClick ShowAnswer ] [ text "回答を表示" ]
+        , button [ onClick PutDeck ] [ text "デッキを保存" ]
         , br [] []
         , div [] [ text (String.fromInt model.questionNumber) ]
         , br [] []
