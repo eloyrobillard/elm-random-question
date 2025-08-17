@@ -16,15 +16,6 @@ import Random
 
 
 
--- MAIN
-
-
-main : Program () Model Msg
-main =
-    Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
-
-
-
 -- MODEL
 
 
@@ -37,6 +28,15 @@ init _ =
     ( { showQuestion = False, showAnswer = False, questionNumber = 0, deck = Array.empty }
     , getDeckHttp
     )
+
+
+
+-- MAIN
+
+
+main : Program () Model Msg
+main =
+    Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
 
 
 
