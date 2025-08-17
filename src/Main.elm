@@ -253,15 +253,6 @@ view model =
 
 editView : Model -> Html Msg
 editView model =
-    let
-        ( question, answer ) =
-            case Array.get model.questionNumber model.deck of
-                Just r ->
-                    r
-
-                Nothing ->
-                    ( "No question at index " ++ String.fromInt model.questionNumber, "" )
-    in
     div [ style "padding" "1rem" ]
         [ button [ Events.onClick UpdateDeck ] [ text "保存する" ]
         , button [ Events.onClick GoToQuizView ] [ text "閉じる" ]
