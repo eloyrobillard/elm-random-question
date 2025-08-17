@@ -19,6 +19,10 @@ import Random
 -- MODEL
 
 
+type alias Deck =
+    Array.Array ( String, String )
+
+
 type alias Model =
     { freeTextQuestion : String, freeTextAnswer : String, isEditing : Bool, showQuestion : Bool, showAnswer : Bool, questionNumber : Int, deck : Deck }
 
@@ -164,7 +168,7 @@ getDeckHttp =
     Http.get { url = "http://127.0.0.1:8001", expect = Http.expectString GetDeckResponse }
 
 
-csvToArray : String -> Array.Array ( String, String )
+csvToArray : String -> Deck
 csvToArray csv =
     csv
         |> String.split "\n"
@@ -173,7 +177,7 @@ csvToArray csv =
         |> Array.fromList
 
 
-deckToString : Array.Array ( String, String ) -> String
+deckToString : Deck -> String
 deckToString deck =
     Array.foldr
         (\( f, s ) acc ->
