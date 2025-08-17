@@ -102,10 +102,10 @@ update msg model =
 
         PutDeckHttp ->
             let
-                deck_csv =
+                deckCSV =
                     model.deck |> deckToString
             in
-            ( model, putDeckHttp deck_csv )
+            ( model, putDeckHttp deckCSV )
 
         PutDeckResponse _ ->
             ( model, Cmd.none )
