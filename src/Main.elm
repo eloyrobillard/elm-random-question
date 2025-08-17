@@ -187,6 +187,7 @@ deckToString deck =
                     , ","
                     , s
                     ]
+                , "\n"
                 , acc
                 ]
         )
