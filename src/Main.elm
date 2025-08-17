@@ -9,8 +9,8 @@ module Main exposing (..)
 import Array
 import Browser
 import Html exposing (Html, br, button, div, text)
-import Html.Attributes exposing (style)
-import Html.Events exposing (onClick)
+import Html.Attributes as Attributes exposing (style)
+import Html.Events as Events
 import Http
 import Random
 
@@ -20,12 +20,12 @@ import Random
 
 
 type alias Model =
-    { showQuestion : Bool, showAnswer : Bool, questionNumber : Int, deck : Array.Array ( String, String ) }
+    { freeTextQuestion : String, freeTextAnswer : String, isEditing : Bool, showQuestion : Bool, showAnswer : Bool, questionNumber : Int, deck : Deck }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { showQuestion = False, showAnswer = False, questionNumber = 0, deck = Array.empty }
+    ( { freeTextQuestion = "", freeTextAnswer = "", isEditing = False, showQuestion = False, showAnswer = False, questionNumber = 0, deck = Array.empty }
     , getDeckHttp
     )
 
@@ -44,8 +44,13 @@ main =
 
 
 type Msg
-    = GetDeckResponse (Result Http.Error String)
-    | PutDeck
+    = GoToEditView
+    | GoToQuizView
+    | ChangeFreeTextQuestion String
+    | ChangeFreeTextAnswer String
+    | UpdateDeck
+    | GetDeckResponse (Result Http.Error String)
+    | PutDeckHttp
     | PutDeckResponse (Result Http.Error String)
     | PickRandom
     | ShowQuestion Int
@@ -55,6 +60,22 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        GoToEditView ->
+            let
+                ( question, answer ) =
+                    getQuestionAnswer model
+            in
+            ( { model | isEditing = True, freeTextQuestion = question, freeTextAnswer = answer }, Cmd.none )
+
+        GoToQuizView ->
+            ( { model | isEditing = False }, Cmd.none )
+
+        ChangeFreeTextQuestion text ->
+            ( { model | freeTextQuestion = text }, Cmd.none )
+
+        ChangeFreeTextAnswer text ->
+            ( { model | freeTextAnswer = text }, Cmd.none )
+
         GetDeckResponse res ->
             case res of
                 Ok deck_csv ->
@@ -63,7 +84,19 @@ update msg model =
                 Err err ->
                     ( { model | deck = Array.fromList [ ( httpErrorToText err, "" ) ] }, Cmd.none )
 
-        PutDeck ->
+        UpdateDeck ->
+            let
+                newDeckMaybe =
+                    buildNewDeck model
+            in
+            case newDeckMaybe of
+                Just newDeck ->
+                    update PutDeckHttp { model | deck = newDeck }
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        PutDeckHttp ->
             let
                 deck_csv =
                     model.deck |> deckToString
@@ -87,6 +120,32 @@ update msg model =
             ( { model | showAnswer = True }
             , Cmd.none
             )
+
+
+getQuestionAnswer : Model -> ( String, String )
+getQuestionAnswer model =
+    case Array.get model.questionNumber model.deck of
+        Just r ->
+            r
+
+        Nothing ->
+            ( "", "" )
+
+
+buildNewDeck : Model -> Maybe.Maybe Deck
+buildNewDeck model =
+    let
+        ( question, answer ) =
+            getQuestionAnswer model
+
+        newDeck =
+            Array.set model.questionNumber ( model.freeTextQuestion, model.freeTextAnswer ) model.deck
+    in
+    if question == model.freeTextQuestion && answer == model.freeTextAnswer then
+        Nothing
+
+    else
+        Just newDeck
 
 
 putDeckHttp : String -> Cmd Msg
@@ -180,6 +239,15 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
+    if model.isEditing then
+        editView model
+
+    else
+        quizView model
+
+
+editView : Model -> Html Msg
+editView model =
     let
         ( question, answer ) =
             case Array.get model.questionNumber model.deck of
@@ -190,9 +258,31 @@ view model =
                     ( "No question at index " ++ String.fromInt model.questionNumber, "" )
     in
     div [ style "padding" "1rem" ]
-        [ button [ onClick PickRandom ] [ text "ランダムに選べ" ]
-        , button [ onClick ShowAnswer ] [ text "回答を表示" ]
-        , button [ onClick PutDeck ] [ text "デッキを保存" ]
+        [ button [ Events.onClick UpdateDeck ] [ text "保存する" ]
+        , button [ Events.onClick GoToQuizView ] [ text "閉じる" ]
+        , Html.textarea
+            [ Events.onInput ChangeFreeTextQuestion
+            , Attributes.value model.freeTextQuestion
+            ]
+            []
+        , Html.textarea
+            [ Events.onInput ChangeFreeTextAnswer
+            , Attributes.value model.freeTextAnswer
+            ]
+            []
+        ]
+
+
+quizView : Model -> Html Msg
+quizView model =
+    let
+        ( question, answer ) =
+            getQuestionAnswer model
+    in
+    div [ style "padding" "1rem" ]
+        [ button [ Events.onClick PickRandom ] [ text "ランダムに選べ" ]
+        , button [ Events.onClick ShowAnswer ] [ text "回答を表示" ]
+        , button [ Events.onClick GoToEditView ] [ text "編集する" ]
         , br [] []
         , div [] [ text (String.fromInt model.questionNumber) ]
         , br [] []
