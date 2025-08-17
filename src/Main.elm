@@ -256,16 +256,18 @@ editView model =
     div [ style "padding" "1rem" ]
         [ button [ Events.onClick UpdateDeck ] [ text "保存する" ]
         , button [ Events.onClick GoToQuizView ] [ text "閉じる" ]
-        , Html.textarea
-            [ Events.onInput ChangeFreeTextQuestion
-            , Attributes.value model.freeTextQuestion
+        , div [ style "display" "flex", style "flex-direction" "column" ]
+            [ Html.textarea
+                [ Events.onInput ChangeFreeTextQuestion
+                , Attributes.value model.freeTextQuestion
+                ]
+                []
+            , Html.textarea
+                [ Events.onInput ChangeFreeTextAnswer
+                , Attributes.value model.freeTextAnswer
+                ]
+                []
             ]
-            []
-        , Html.textarea
-            [ Events.onInput ChangeFreeTextAnswer
-            , Attributes.value model.freeTextAnswer
-            ]
-            []
         ]
 
 
