@@ -1,7 +1,8 @@
-import { Elm } from './Main.elm'
+import "./index.css";
+import { Elm } from "./Main.elm";
 
 // Mount "Main" Browser.{element,document} on #root
 Elm.Main.init({
-  node: document.getElementById('myapp'),
-  flags: "Initial Message"
-})
+	node: document.querySelector("main"),
+	flags: "Initial Message",
+});

@@ -1,5 +1,6 @@
-import { plugin } from "vite-plugin-elm";
+import tailwindcss from "@tailwindcss/vite";
+import elmPlugin from "vite-plugin-elm";
 
 export default {
-	plugins: [plugin()],
+	plugins: [elmPlugin(), tailwindcss()],
 };

@@ -8,11 +8,13 @@ module Main exposing (..)
 
 import Array
 import Browser
-import Html exposing (Html, br, button, div, text)
-import Html.Attributes as Attributes exposing (style)
+import Html exposing (Html, button, div, text)
+import Html.Attributes exposing (attribute, class, id, style)
 import Html.Events as Events
 import Http
 import Random
+import Svg
+import Svg.Attributes
 
 
 
@@ -259,12 +261,12 @@ editView model =
         , div [ style "display" "flex", style "flex-direction" "column" ]
             [ Html.textarea
                 [ Events.onInput ChangeFreeTextQuestion
-                , Attributes.value model.freeTextQuestion
+                , Html.Attributes.value model.freeTextQuestion
                 ]
                 []
             , Html.textarea
                 [ Events.onInput ChangeFreeTextAnswer
-                , Attributes.value model.freeTextAnswer
+                , Html.Attributes.value model.freeTextAnswer
                 ]
                 []
             ]
@@ -277,22 +279,63 @@ quizView model =
         ( question, answer ) =
             getQuestionAnswer model
     in
-    div [ style "padding" "1rem" ]
-        [ button [ Events.onClick PickRandom ] [ text "ランダムに選べ" ]
-        , button [ Events.onClick ShowAnswer ] [ text "回答を表示" ]
-        , button [ Events.onClick GoToEditView ] [ text "編集する" ]
-        , br [] []
-        , div [] [ text (String.fromInt model.questionNumber) ]
-        , br [] []
-        , div [] [ text question ]
-        , br [] []
-        , div []
-            [ text
-                (if model.showAnswer then
-                    answer
-
-                 else
-                    ""
-                )
+    div [ class "preview flex w-full justify-center data-[align=center]:items-center data-[align=end]:items-end data-[align=start]:items-start h-[450px] p-10", attribute "data-align" "center" ]
+        [ div [ class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
+            [ div [ class "w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none hidden sm:flex", attribute "data-slot" "button-group", attribute "role" "group" ]
+                [ button [ attribute "aria-label" "Go Back", class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9", attribute "data-slot" "button" ]
+                    [ Svg.svg [ Svg.Attributes.class "lucide lucide-arrow-left", Svg.Attributes.fill "none", Html.Attributes.attribute "height" "24", Html.Attributes.attribute "stroke" "currentColor", Html.Attributes.attribute "stroke-linecap" "round", Html.Attributes.attribute "stroke-linejoin" "round", Html.Attributes.attribute "stroke-width" "2", Svg.Attributes.viewBox "0 0 24 24", Html.Attributes.attribute "width" "24", Html.Attributes.attribute "xmlns" "http://www.w3.org/2000/svg" ]
+                        [ Svg.path [ Svg.Attributes.d "m12 19-7-7 7-7" ]
+                            []
+                        , Svg.path [ Svg.Attributes.d "M19 12H5" ]
+                            []
+                        ]
+                    ]
+                ]
+            , div [ class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
+                [ button [ class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick PickRandom ]
+                    [ text "Random question" ]
+                , button [ class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick ShowAnswer ]
+                    [ text "Show answer" ]
+                ]
+            , div [ class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
+                [ button [ class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick GoToEditView ]
+                    [ text "Edit card" ]
+                , button [ attribute "aria-expanded" "false", attribute "aria-haspopup" "menu", attribute "aria-label" "More Options", class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9", attribute "data-slot" "dropdown-menu-trigger", attribute "data-state" "closed", id "radix-_r_a0_", Svg.Attributes.type_ "button" ]
+                    [ Svg.svg
+                        [ Svg.Attributes.class "lucide lucide-ellipsis", Svg.Attributes.fill "none", Html.Attributes.attribute "height" "24", Html.Attributes.attribute "stroke" "currentColor", Html.Attributes.attribute "stroke-linecap" "round", Html.Attributes.attribute "stroke-linejoin" "round", Html.Attributes.attribute "stroke-width" "2", Svg.Attributes.viewBox "0 0 24 24", Html.Attributes.attribute "width" "24", Html.Attributes.attribute "xmlns" "http://www.w3.org/2000/svg" ]
+                        [ Svg.node "circle"
+                            [ attribute "cx" "12", attribute "cy" "12", attribute "r" "1" ]
+                            []
+                        , Svg.node "circle"
+                            [ attribute "cx" "19", attribute "cy" "12", attribute "r" "1" ]
+                            []
+                        , Svg.node "circle"
+                            [ attribute "cx" "5", attribute "cy" "12", attribute "r" "1" ]
+                            []
+                        ]
+                    ]
+                ]
             ]
         ]
+
+
+
+-- div [ style "padding" "1rem" ]
+--     [ button [ Events.onClick PickRandom ] [ text "ランダムに選べ" ]
+--     , button [ Events.onClick ShowAnswer ] [ text "回答を表示" ]
+--     , button [ Events.onClick GoToEditView ] [ text "編集する" ]
+--     , br [] []
+--     , div [] [ text (String.fromInt model.questionNumber) ]
+--     , br [] []
+--     , div [] [ text question ]
+--     , br [] []
+--     , div []
+--         [ text
+--             (if model.showAnswer then
+--                 answer
+--
+--              else
+--                 ""
+--             )
+--         ]
+--     ]
