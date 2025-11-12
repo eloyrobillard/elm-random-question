@@ -320,10 +320,10 @@ quizView model =
                         ]
                     ]
                 , div [ Html.Attributes.class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
-                    [ button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick PickRandom ]
-                        [ text "Random question" ]
-                    , button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick ShowAnswer ]
-                        [ text "Show answer" ]
+                    [ button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button" ]
+                        [ text "View all cards" ]
+                    , button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick PickRandom ]
+                        [ text "Next random question" ]
                     ]
                 , div [ Html.Attributes.class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
                     [ button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick GoToEditView ]
@@ -384,8 +384,9 @@ quizView model =
                                 , attribute "data-state" accordionState
                                 , id "radix-_r_5a_"
                                 , type_ "button"
+                                , Events.onClick ShowAnswer
                                 ]
-                                [ text "Product Information"
+                                [ text "Answer"
                                 , svg [ class "lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200", fill "none", attribute "height" "24", attribute "stroke" "currentColor", attribute "stroke-linecap" "round", attribute "stroke-linejoin" "round", attribute "stroke-width" "2", viewBox "0 0 24 24", attribute "width" "24", attribute "xmlns" "http://www.w3.org/2000/svg" ]
                                     [ path [ d "m6 9 6 6 6-6" ]
                                         []
@@ -403,9 +404,7 @@ quizView model =
                             )
                             [ div [ class "pt-0 pb-4 flex flex-col gap-4 text-balance" ]
                                 [ p []
-                                    [ text "Our flagship product combines cutting-edge technology with sleek design. Built with premium materials, it offers unparalleled performance and reliability." ]
-                                , p []
-                                    [ text "Key features include advanced processing capabilities, and an intuitive user interface designed for both beginners and experts." ]
+                                    [ text answer ]
                                 ]
                             ]
                         ]
@@ -413,25 +412,3 @@ quizView model =
                 ]
             ]
         ]
-
-
-
--- div [ style "padding" "1rem" ]
---     [ button [ Events.onClick PickRandom ] [ text "ランダムに選べ" ]
---     , button [ Events.onClick ShowAnswer ] [ text "回答を表示" ]
---     , button [ Events.onClick GoToEditView ] [ text "編集する" ]
---     , br [] []
---     , div [] [ text (String.fromInt model.questionNumber) ]
---     , br [] []
---     , div [] [ text question ]
---     , br [] []
---     , div []
---         [ text
---             (if model.showAnswer then
---                 answer
---
---              else
---                 ""
---             )
---         ]
---     ]
