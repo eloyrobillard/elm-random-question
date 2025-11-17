@@ -76,10 +76,40 @@ update msg model =
             ( { model | isEditing = False }, Cmd.none )
 
         EditQuestion ->
-            ( { model | editingQuestion = True, freeTextQuestion = model |> getQuestionAnswer |> Tuple.first }, Cmd.none )
+            let
+                ( question, answer ) =
+                    getQuestionAnswer model
+            in
+            ( { model
+                | editingQuestion = True
+                , freeTextQuestion = question
+                , freeTextAnswer =
+                    if model.editingAnswer then
+                        model.freeTextAnswer
+
+                    else
+                        answer
+              }
+            , Cmd.none
+            )
 
         EditAnswer ->
-            ( { model | editingAnswer = True, freeTextAnswer = model |> getQuestionAnswer |> Tuple.second }, Cmd.none )
+            let
+                ( question, answer ) =
+                    getQuestionAnswer model
+            in
+            ( { model
+                | editingAnswer = True
+                , freeTextAnswer = answer
+                , freeTextQuestion =
+                    if model.editingQuestion then
+                        model.freeTextQuestion
+
+                    else
+                        question
+              }
+            , Cmd.none
+            )
 
         SaveQuestion ->
             update UpdateDeck { model | editingQuestion = False }
@@ -154,8 +184,6 @@ getQuestionAnswer model =
 
 buildNewDeck : Model -> Maybe.Maybe Deck
 buildNewDeck model =
-    -- TODO: Question か Answer を一方だけ指定しない限り、もう一方は削除されてしまう
-    -- （幸いなことに、サーバーはそれを許容しないから間違ったデッキを保存できない）
     let
         ( question, answer ) =
             getQuestionAnswer model
