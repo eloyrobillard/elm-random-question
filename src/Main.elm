@@ -2,8 +2,8 @@ module Main exposing (..)
 
 import Array
 import Browser
-import Html exposing (Html, a, button, div, h3, p, text, textarea)
-import Html.Attributes exposing (attribute, href, id, placeholder, type_)
+import Html exposing (Html, button, div, h3, p, text, textarea)
+import Html.Attributes exposing (attribute, id, placeholder, type_)
 import Html.Events as Events
 import Http
 import Random
@@ -290,57 +290,6 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
-    if model.isEditing then
-        editView model
-
-    else
-        quizView model
-
-
-editView : Model -> Html Msg
-editView model =
-    div [ Html.Attributes.class "flex w-full flex-col" ]
-        [ div [ Html.Attributes.class "preview flex w-full justify-center data-[align=center]:items-center data-[align=end]:items-end data-[align=start]:items-start p-10", attribute "data-align" "center" ]
-            [ div [ Html.Attributes.class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
-                [ div [ Html.Attributes.class "w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none hidden sm:flex", attribute "data-slot" "button-group", attribute "role" "group" ]
-                    [ button [ attribute "aria-label" "Go Back", Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9", attribute "data-slot" "button", Events.onClick GoToQuizView ]
-                        [ Svg.svg [ Svg.Attributes.class "lucide lucide-arrow-left", Svg.Attributes.fill "none", attribute "height" "24", attribute "stroke" "currentColor", attribute "stroke-linecap" "round", attribute "stroke-linejoin" "round", attribute "stroke-width" "2", Svg.Attributes.viewBox "0 0 24 24", attribute "width" "24", attribute "xmlns" "http://www.w3.org/2000/svg" ]
-                            [ Svg.path [ Svg.Attributes.d "m12 19-7-7 7-7" ]
-                                []
-                            , Svg.path [ Svg.Attributes.d "M19 12H5" ]
-                                []
-                            ]
-                        ]
-                    ]
-                , div [ Html.Attributes.class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
-                    [ button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick UpdateDeck ]
-                        [ text "Save changes" ]
-                    ]
-                ]
-            ]
-        , div [ Html.Attributes.class "preview flex w-full justify-center data-[align=center]:items-center data-[align=end]:items-end data-[align=start]:items-start p-10", attribute "data-align" "center" ]
-            [ textarea
-                [ class "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                , attribute "data-slot" "textarea"
-                , placeholder "Type the question here."
-                , Events.onInput ChangeFreeTextQuestion
-                , Html.Attributes.value model.freeTextQuestion
-                ]
-                [ text model.freeTextQuestion ]
-            , textarea
-                [ class "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                , attribute "data-slot" "textarea"
-                , placeholder "Type the answer here."
-                , Events.onInput ChangeFreeTextAnswer
-                , Html.Attributes.value model.freeTextAnswer
-                ]
-                [ text model.freeTextAnswer ]
-            ]
-        ]
-
-
-quizView : Model -> Html Msg
-quizView model =
     let
         ( question, answer ) =
             getQuestionAnswer model
@@ -374,7 +323,7 @@ quizView model =
 
             else
                 button [ Html.Attributes.class "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick EditQuestion ]
-                    [ text "Edit Question" ]
+                    [ text "Edit" ]
 
         answerInner =
             if model.editingAnswer then
@@ -442,12 +391,12 @@ quizView model =
 
         answerButton =
             if model.editingAnswer then
-                button [ Html.Attributes.class "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick SaveAnswer ]
+                button [ Html.Attributes.class "inline-flex shrink-0 items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick SaveAnswer ]
                     [ text "Save answer" ]
 
             else
                 button [ Html.Attributes.class "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick EditAnswer ]
-                    [ text "Edit answer" ]
+                    [ text "Edit" ]
     in
     div [ Html.Attributes.class "flex w-full flex-col" ]
         [ div [ Html.Attributes.class "preview flex w-full justify-center data-[align=center]:items-center data-[align=end]:items-end data-[align=start]:items-start p-10", attribute "data-align" "center" ]
@@ -485,13 +434,13 @@ quizView model =
                             , questionInner
                             ]
                         ]
-                    , div [ Html.Attributes.class "flex items-center gap-2", attribute "data-slot" "item-actions" ]
+                    , div [ Html.Attributes.class "flex w-[100px] ml-[10px] shrink-0 items-center gap-2", attribute "data-slot" "item-actions" ]
                         [ questionButton ]
                     ]
                 , div [ Html.Attributes.class "flex" ]
-                    [ div [ Html.Attributes.class "group/item flex items-center border text-sm rounded-md transition-colors [a]:hover:bg-accent/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] border-border py-3 px-4 gap-2.5", attribute "data-size" "sm", attribute "data-slot" "item", attribute "data-variant" "outline" ]
+                    [ div [ Html.Attributes.class "group/item flex grow-1 items-center border text-sm rounded-md transition-colors [a]:hover:bg-accent/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] border-border py-3 px-4 gap-2.5", attribute "data-size" "sm", attribute "data-slot" "item", attribute "data-variant" "outline" ]
                         [ answerInner ]
-                    , div [ Html.Attributes.class "flex items-center gap-2", attribute "data-slot" "item-actions" ]
+                    , div [ Html.Attributes.class "flex w-[100px] ml-[10px] items-center gap-2", attribute "data-slot" "item-actions" ]
                         [ answerButton ]
                     ]
                 ]
