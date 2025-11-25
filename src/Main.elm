@@ -20,12 +20,12 @@ type alias Deck =
 
 
 type alias Model =
-    { editingQuestion : Bool, editingAnswer : Bool, showDropdown : Bool, freeTextQuestion : String, freeTextAnswer : String, isEditing : Bool, showQuestion : Bool, showAnswer : Bool, questionNumber : Int, deck : Deck }
+    { showDeleteConfirmDialog : Bool, editingQuestion : Bool, editingAnswer : Bool, showDropdown : Bool, freeTextQuestion : String, freeTextAnswer : String, isEditing : Bool, showQuestion : Bool, showAnswer : Bool, questionNumber : Int, deck : Deck }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { editingQuestion = False, editingAnswer = False, showDropdown = False, freeTextQuestion = "", freeTextAnswer = "", isEditing = False, showQuestion = False, showAnswer = False, questionNumber = 0, deck = Array.empty }
+    ( { showDeleteConfirmDialog = False, editingQuestion = False, editingAnswer = False, showDropdown = False, freeTextQuestion = "", freeTextAnswer = "", isEditing = False, showQuestion = False, showAnswer = False, questionNumber = 0, deck = Array.empty }
     , getDeckHttp
     )
 
@@ -46,6 +46,9 @@ main =
 type Msg
     = GoToEditView
     | GoToQuizView
+    | ShowDeleteConfirmDialog
+    | UnshowDeleteConfirmDialog
+    | DeleteCard Int
     | EditQuestion
     | EditAnswer
     | SaveQuestion
@@ -74,6 +77,15 @@ update msg model =
 
         GoToQuizView ->
             ( { model | isEditing = False }, Cmd.none )
+
+        ShowDeleteConfirmDialog ->
+            ( { model | showDeleteConfirmDialog = True }, Cmd.none )
+
+        UnshowDeleteConfirmDialog ->
+            ( { model | showDeleteConfirmDialog = False }, Cmd.none )
+
+        DeleteCard cardId ->
+            update PutDeckHttp { model | deck = removeCard cardId model.deck }
 
         EditQuestion ->
             let
@@ -146,7 +158,7 @@ update msg model =
         PutDeckHttp ->
             let
                 deckCSV =
-                    model.deck |> deckToString
+                    model.deck |> deckToCSV
             in
             ( model, putDeckHttp deckCSV )
 
@@ -170,6 +182,23 @@ update msg model =
             ( { model | showAnswer = not model.showAnswer }
             , Cmd.none
             )
+
+
+removeCard : Int -> Deck -> Deck
+removeCard cardId deck =
+    case Array.get cardId deck of
+        Just _ ->
+            let
+                a1 =
+                    Array.slice 0 cardId deck
+
+                a2 =
+                    Array.slice (cardId + 1) (Array.length deck) deck
+            in
+            Array.append a1 a2
+
+        Nothing ->
+            deck
 
 
 getQuestionAnswer : Model -> ( String, String )
@@ -223,8 +252,8 @@ csvToArray csv =
         |> Array.fromList
 
 
-deckToString : Deck -> String
-deckToString deck =
+deckToCSV : Deck -> String
+deckToCSV deck =
     Array.foldr
         (\( f, s ) acc ->
             String.concat
@@ -397,6 +426,28 @@ view model =
             else
                 button [ Html.Attributes.class "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick EditAnswer ]
                     [ text "Edit" ]
+
+        deleteButton =
+            if model.showDeleteConfirmDialog then
+                div [ class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
+                    [ p [ class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input h-9 px-4 py-2 has-[>svg]:px-3" ]
+                        [ text "Confirm?" ]
+                    , button
+                        [ class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
+                        , attribute "data-slot" "button"
+                        , Events.onClick
+                            (DeleteCard model.questionNumber)
+                        ]
+                        [ text "Yes" ]
+                    , button [ class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick UnshowDeleteConfirmDialog ]
+                        [ text "No" ]
+                    ]
+
+            else
+                div [ Html.Attributes.class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
+                    [ button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick ShowDeleteConfirmDialog ]
+                        [ text "Delete card" ]
+                    ]
     in
     div [ Html.Attributes.class "flex w-full flex-col" ]
         [ div [ Html.Attributes.class "preview flex w-full justify-center data-[align=center]:items-center data-[align=end]:items-end data-[align=start]:items-start p-10", attribute "data-align" "center" ]
@@ -417,10 +468,7 @@ view model =
                     , button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick PickRandom ]
                         [ text "Next random question" ]
                     ]
-                , div [ Html.Attributes.class "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2 [&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none", attribute "data-slot" "button-group", attribute "role" "group" ]
-                    [ button [ Html.Attributes.class "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3", attribute "data-slot" "button", Events.onClick GoToEditView ]
-                        [ text "Edit card" ]
-                    ]
+                , deleteButton
                 ]
             ]
         , div [ Html.Attributes.class "preview flex w-full justify-center data-[align=center]:items-center data-[align=end]:items-end data-[align=start]:items-start p-10", attribute "data-align" "center" ]
