@@ -313,13 +313,13 @@ view model =
                     [ text model.freeTextQuestion ]
 
             else
-                p [ Html.Attributes.class "text-muted-foreground line-clamp-2 text-sm leading-normal font-normal text-balance [&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4", attribute "data-slot" "item-description" ]
+                p [ Html.Attributes.class "text-muted-foreground line-clamp-2 text-sm leading-normal font-normal [&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4", attribute "data-slot" "item-description" ]
                     [ text question ]
 
         questionButton =
             if model.editingQuestion then
                 button [ Html.Attributes.class "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick SaveQuestion ]
-                    [ text "Save Question" ]
+                    [ text "Save" ]
 
             else
                 button [ Html.Attributes.class "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick EditQuestion ]
@@ -382,7 +382,7 @@ view model =
                                     [ attribute "hidden" "" ]
                                )
                         )
-                        [ div [ class "pt-0 pb-4 flex flex-col gap-4 text-balance" ]
+                        [ div [ class "pt-0 pb-4 flex flex-col gap-4" ]
                             [ p []
                                 [ text answer ]
                             ]
@@ -392,7 +392,7 @@ view model =
         answerButton =
             if model.editingAnswer then
                 button [ Html.Attributes.class "inline-flex shrink-0 items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick SaveAnswer ]
-                    [ text "Save answer" ]
+                    [ text "Save" ]
 
             else
                 button [ Html.Attributes.class "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5", attribute "data-slot" "button", Events.onClick EditAnswer ]
@@ -427,7 +427,7 @@ view model =
             [ div
                 [ Html.Attributes.class "flex w-full max-w-md flex-col gap-6" ]
                 [ div [ Html.Attributes.class "flex" ]
-                    [ div [ Html.Attributes.class "group/item flex items-center border text-sm rounded-md transition-colors [a]:hover:bg-accent/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] border-border p-4 gap-4", attribute "data-size" "default", attribute "data-slot" "item", attribute "data-variant" "outline" ]
+                    [ div [ Html.Attributes.class "group/item flex grow-1 items-center border text-sm rounded-md transition-colors [a]:hover:bg-accent/50 [a]:transition-colors duration-100 flex-wrap outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] border-border p-4 gap-4", attribute "data-size" "default", attribute "data-slot" "item", attribute "data-variant" "outline" ]
                         [ div [ Html.Attributes.class "flex flex-1 flex-col gap-1 [&+[data-slot=item-content]]:flex-none", attribute "data-slot" "item-content" ]
                             [ div [ Html.Attributes.class "flex w-fit items-center gap-2 text-sm leading-snug font-medium", attribute "data-slot" "item-title" ]
                                 [ text "Question" ]
