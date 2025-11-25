@@ -154,7 +154,7 @@ update msg model =
             ( model, Cmd.none )
 
         PickRandom ->
-            ( model
+            ( { model | editingQuestion = False, editingAnswer = False }
             , Random.generate ShowQuestion (Random.int 0 (Array.length model.deck - 1))
             )
 
